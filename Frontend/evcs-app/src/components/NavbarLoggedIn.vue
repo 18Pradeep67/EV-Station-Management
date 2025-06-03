@@ -1,7 +1,8 @@
 <!-- src/components/Navbar.vue -->
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import {jwtDecode} from 'jwt-decode'
 
 const router = useRouter()
 const mobileMenuOpen = ref(false)
@@ -11,9 +12,27 @@ const toggleMobileMenu = () => {
 }
 
 const logout = () => {
-  localStorage.removeItem('isAuthenticated')
-  router.push('/login')
+  localStorage.removeItem('isAuthenticated');
+  localStorage.removeItem('token');
+  router.push('/login');
 }
+
+interface DecodedToken {
+  isAdmin?: boolean;
+  [key: string]: any;
+}
+
+// Get token from localStorage and strip 'Bearer ' prefix
+const tokenWithBearer = localStorage.getItem('token');
+const token = tokenWithBearer?.startsWith('Bearer ') ? tokenWithBearer.split(' ')[1] : null;
+
+// Decode token
+const decoded = token ? jwtDecode<DecodedToken>(token) : null;
+const isAdmin = computed(() => decoded?.isAdmin === true);
+
+console.log("Token:", token)
+console.log("Decoded:", decoded)
+console.log("isAdmin:", isAdmin.value)
 </script>
 
 <template>
@@ -31,8 +50,8 @@ const logout = () => {
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center space-x-4">
           <router-link to="/dashboard" class="px-3 py-2 rounded-md hover:bg-green-800 transition">Dashboard</router-link>
-          <router-link to="/chargers" class="px-3 py-2 rounded-md hover:bg-green-800 transition">Chargers</router-link>
-          <router-link to="/map" class="px-3 py-2 rounded-md hover:bg-green-800 transition">Map</router-link>
+          <router-link :to="isAdmin ? '/admin/stations' : '/chargers'" class="px-3 py-2 rounded-md hover:bg-green-800 transition">Chargers</router-link>
+          <router-link :to="isAdmin ? '/admin/map' : '/map'" class="px-3 py-2 rounded-md hover:bg-green-800 transition">Map</router-link>
           <button @click="logout" class="px-3 py-2 rounded-md hover:bg-green-800 transition">Logout</button>
         </div>
 
@@ -51,8 +70,8 @@ const logout = () => {
       <!-- Mobile Navigation -->
       <div v-if="mobileMenuOpen" class="md:hidden mt-2 space-y-1 pb-1">
         <router-link to="/dashboard" class="block px-3 py-2 rounded-md hover:bg-green-800 transition" @click="mobileMenuOpen = false">Dashboard</router-link>
-        <router-link to="/chargers" class="block px-3 py-2 rounded-md hover:bg-green-800 transition" @click="mobileMenuOpen = false">Chargers</router-link>
-        <router-link to="/map" class="block px-3 py-2 rounded-md hover:bg-green-800 transition" @click="mobileMenuOpen = false">Map</router-link>
+        <router-link :to="isAdmin ? '/admin/chargers' : '/chargers'" class="block px-3 py-2 rounded-md hover:bg-green-800 transition" @click="mobileMenuOpen = false">Chargers</router-link>
+        <router-link :to="isAdmin ? '/admin/map' : '/map'" class="block px-3 py-2 rounded-md hover:bg-green-800 transition" @click="mobileMenuOpen = false">Map</router-link>
         <button class="block w-full text-left px-3 py-2 rounded-md hover:bg-green-800 transition" @click="logout(); mobileMenuOpen = false">Logout</button>
       </div>
     </div>

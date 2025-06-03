@@ -8,9 +8,6 @@ export interface ChargingStation {
   status: 'Active' | 'Inactive' | 'Maintenance';
   powerOutput: number; // in kW
   connectorType: string;
-  address?: string;
-  price?: string;
-  lastMaintained?: string;
 }
 
 export interface StationFilters {

@@ -7,7 +7,7 @@
       @apply="fetchStations"
       @reset="resetFilters"
     />
-    
+     
     <StationsList 
       :stations="stations"
       :filtered-stations="filteredStations"
@@ -21,10 +21,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import StationsFilter from '../components/stations/StationsFilter.vue';
-import StationsList from '../components/stations/StationsList.vue';
-import { useStations, useStationFilters } from '../composables/useStations';
-import type { ChargingStation } from '../types';
+import StationsFilter from '../../components/stations/StationsFilter.vue';
+import StationsList from '../../components/stations/StationsList.vue';
+import { useStations, useStationFilters } from '../../composables/useStations';
+import type { ChargingStation } from '../../types';
 
 const router = useRouter();
 const { stations, isLoading, error, fetchStations } = useStations();
@@ -33,7 +33,6 @@ const { filters, applyFilters, resetFilters } = useStationFilters();
 const filteredStations = computed(() => {
   return applyFilters(stations.value);
 });
-
 const viewOnMap = (station: ChargingStation) => {
   router.push({ 
     path: '/map',
@@ -41,8 +40,10 @@ const viewOnMap = (station: ChargingStation) => {
   });
 };
 
-onMounted(() => {
-  fetchStations();
+onMounted(async() => {
+  await fetchStations();
+  console.log('Received in mount', stations.value)
+
 });
 </script>
 

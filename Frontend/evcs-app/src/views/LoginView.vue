@@ -31,18 +31,38 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
+import { login } from '@/api/auth.js';
 
 const router = useRouter();
-const name = ref('')
-const password = ref('')
+const name = ref('');
+const password = ref('');
 
-function handleSubmit() {
-    if (!name.value || !password.value ) {
-        alert('Please fill in all fields.')
-        return
-    }
+const handleSubmit = async () => {
+  if (!name.value || !password.value) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Missing Fields',
+      text: 'Please fill in all fields.',
+    });
+    return;
+  }
+
+  const data = await login(name.value, password.value);
+
+  if (data.token) {
+    // Login successful
     localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('token', 'Bearer '+data.token);
     router.push('/dashboard');
-}
+  } else {
+    // Login failed — backend message shown
+    Swal.fire({
+      icon: 'error',
+      title: 'Login Failed',
+      text: data.message || 'Login failed',
+    });
+  }
+};
 </script>

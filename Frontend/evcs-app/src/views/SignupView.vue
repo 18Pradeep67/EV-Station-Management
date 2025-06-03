@@ -49,6 +49,7 @@
 <script setup LANG="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import {signupAPI} from '@/api/auth.js';
 
 const router = useRouter();
 const username = ref('');
@@ -58,7 +59,7 @@ const confirmPassword = ref('');
 const errorMessage = ref('');
 
 
-const signup = () => {
+const signup = async() => {
   // Form validations
     if (!username.value || !email.value || !password.value || !confirmPassword.value) {
         errorMessage.value = 'Please fill in all fields';
@@ -71,9 +72,14 @@ const signup = () => {
         alert(errorMessage.value);
         return;
     }
-    // Here you would typically call an API to register the user
-    // For now, we'll simulate a successful registration
-    localStorage.setItem('isAuthenticated', 'true');
-    router.push('/dashboard');
+    try {
+        const data = await signupAPI(username.value, email.value, password.value);
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('token', 'Bearer ' + data.token);
+        router.push('/dashboard');
+    } catch (err) {
+        errorMessage.value = err.response?.data?.message || 'Signup failed';
+        alert(errorMessage.value);
+    }
 };
 </script>

@@ -5,9 +5,9 @@
       <span class="badge" :class="statusClass">{{ station.status }}</span>
     </div>
     
-    <div class="station-address">
+    <!-- <div class="station-address">
       {{ station.address || 'No address available' }}
-    </div>
+    </div> -->
     
     <div class="station-details">
       <div class="detail-item">
@@ -20,15 +20,6 @@
         <span class="detail-value">{{ station.connectorType }}</span>
       </div>
       
-      <div class="detail-item" v-if="station.price">
-        <span class="detail-label">Price:</span>
-        <span class="detail-value">{{ station.price }}</span>
-      </div>
-      
-      <div class="detail-item" v-if="station.lastMaintained">
-        <span class="detail-label">Last Maintained:</span>
-        <span class="detail-value">{{ station.lastMaintained }}</span>
-      </div>
     </div>
     
     <div class="station-actions">
