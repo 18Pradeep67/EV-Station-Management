@@ -4,11 +4,11 @@ import { hashPassword, comparePasswords } from "../utils/bcrypt.js";
 
 //JWT
 const generateToken = (user) => {
-  return jwt.sign(
-    { id: user._id, isAdmin: user.isAdmin },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN }
-  );
+    return jwt.sign(
+        { id: user._id, isAdmin: user.isAdmin },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
 };
 
 //POST api/v1/signup
@@ -16,17 +16,17 @@ export const signup = async (req, res) => {
     console.log("POST /api/v1/signup");
     const { username, email, password, isAdmin } = req.body;
 
-    try {   
+    try {
         const existingUser = await User.findOne({ username });
         if (existingUser)
-        return res.status(400).json({ error: "Username already taken" });
-        
+            return res.status(400).json({ error: "Username already taken" });
+
         const existingUser1 = await User.findOne({ email });
         if (existingUser1)
-        return res.status(400).json({ error: "Email already taken" });
+            return res.status(400).json({ error: "Email already taken" });
 
         const hashed = await hashPassword(password);
-        const user = new User({ username, email, password: hashed , isAdmin});
+        const user = new User({ username, email, password: hashed, isAdmin });
 
         await user.save();
 
@@ -44,16 +44,22 @@ export const login = async (req, res) => {
 
     try {
         const user = await User.findOne({ username });
-        if (!user){
+        if (!user) {
             return res.status(400).json({ message: "Invalid username or password" });
         }
         const isMatch = await comparePasswords(password, user.password);
         if (!isMatch)
-        return res.status(400).json({ message: "Invalid username or password" });
+            return res.status(400).json({ message: "Invalid username or password" });
 
         const token = generateToken(user);
         res.status(200).json({ token });
     } catch (err) {
         res.status(500).json({ message: "Server error during login" });
     }
+};
+
+export const health = async (req, res) => {
+    app.get('/health', (req, res) => {
+        res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+    });
 };
