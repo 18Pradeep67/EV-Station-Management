@@ -30,3 +30,7 @@ app.use('/api/v1',userRoutes);
 app.listen(PORT,()=>{
     console.log(`Server is running on ${PORT}`);
 });
+
+app.get('/health', (req, res) => {
+        res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+    });

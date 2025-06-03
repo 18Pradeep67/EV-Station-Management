@@ -57,9 +57,3 @@ export const login = async (req, res) => {
         res.status(500).json({ message: "Server error during login" });
     }
 };
-
-export const health = async (req, res) => {
-    app.get('/health', (req, res) => {
-        res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
-    });
-};
