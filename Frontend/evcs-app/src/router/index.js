@@ -12,23 +12,23 @@ import { jwtDecode } from 'jwt-decode';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: '/', name: 'home', component: HomeView },
-    { path: '/signup', name: 'signup', component: SignupView },
-    { path: '/login', name: 'login', component: LoginView },
-    { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
-    { path: '/chargers', name: 'chargers', component: ChargingStations, meta: { requiresAuth: true } },
-    { path: '/map', name: 'map', component: MapView, meta: { requiresAuth: true } },
+    { path: '/', name: 'home', component: HomeView,meta:{layout:'public'} },
+    { path: '/signup', name: 'signup', component: SignupView, meta:{layout:'public'} },
+    { path: '/login', name: 'login', component: LoginView, meta:{layout:'public'} },
+    { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true, layout:'loggedIn' } },
+    { path: '/chargers', name: 'chargers', component: ChargingStations, meta: { requiresAuth: true, layout:'loggedIn' } },
+    { path: '/map', name: 'map', component: MapView, meta: { requiresAuth: true, layout:'loggedIn' } },
     {
       path: '/admin/stations',
       name: 'adminstations',
       component: AdminStationsView,
-      meta: { requiresAuth: true, requiresAdmin: true }
+      meta: { requiresAuth: true, requiresAdmin: true, layout:'loggedIn' }
     },
     {
       path: '/admin/map',
       name: 'adminmap',
       component: AdminMapView,
-      meta: { requiresAuth: true, requiresAdmin: true }
+      meta: { requiresAuth: true, requiresAdmin: true, layout:'loggedIn' }
     }
   ]
 });
