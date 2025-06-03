@@ -1,5 +1,4 @@
 export interface ChargingStation {
-  id?: string;
   name: string;
   location: {
     latitude: number;

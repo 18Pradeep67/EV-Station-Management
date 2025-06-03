@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/allChargingStations',protect,viewAllCS);
 router.post('/addChargingStation',protect,adminOnly,addCS);
-router.put('/updateChargingStation/:id',protect,adminOnly,updateCS);
-router.delete('/deleteChargingStation/:id',protect,adminOnly,deleteCS);
+router.put('/updateChargingStation/:name',protect,adminOnly,updateCS);
+router.delete('/deleteChargingStation/:name',protect,adminOnly,deleteCS);
 
 export default router;

@@ -1,7 +1,7 @@
 <template>
     <section class="min-h-[calc(100vh-5rem)] flex items-center justify-center bg-green-100">
         <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-            <h2 class="text-2xl font-bold text-center text-black-700 mb-6">Create an Account</h2>
+            <h2 class="text-2xl font-bold text-center text-black-700 mb-6">Login to your account</h2>
             <form @submit.prevent="handleSubmit">
                 <div class="mb-4">
                     <label for="name" class="block mb-1 font-semibold text-black-700">Username</label>

@@ -35,6 +35,12 @@ import { useStations } from '../../composables/useStations';
 import type { ChargingStation } from '../../types';
 
 const route = useRoute();
+if (Object.keys(route.query).length > 0) {
+  console.log('Query params:', route.query);
+} else {
+  console.log('No query params');
+}
+
 const { 
   stations, 
   isLoading, 
@@ -48,30 +54,46 @@ const centerStationId = ref<string | null>(null);
 const editingStation = ref<ChargingStation | null>(null);
 const isSubmitting = ref(false);
 
+
 const editStation = (station: ChargingStation) => {
   editingStation.value = station;
 };
 
 const deleteStation = async (station: ChargingStation) => {
-  if (station.id) {
-    await removeStation(station.id);
+  if (station.name) {
+    try {
+      await removeStation(station);
+      await fetchStations(); // make sure new station appears
+    } catch (err) {
+      console.error(err);
+    } finally {
+      await fetchStations();
+    }
   }
 };
 
 const saveStation = async (station: ChargingStation) => {
   isSubmitting.value = true;
-  
   try {
-    if (station.id) {
-      await updateStation(station.id, station);
+    if (editingStation.value) {
+      await updateStation(station);
     }
     closeForm();
+    await fetchStations(); // make sure new station appears
+    window.location.reload();
   } catch (err) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Charging Station already exists',
+      text: 'Please enter a new charging station name.',
+    });
     console.error(err);
   } finally {
+    await fetchStations();
     isSubmitting.value = false;
   }
 };
+
 
 const closeForm = () => {
   editingStation.value = null;
@@ -82,6 +104,7 @@ onMounted(async () => {
   
   // Check if we need to center on a specific station
   if (route.query.stationId) {
+    console.log(route.query.stationId);
     centerStationId.value = route.query.stationId as string;
   }
 });

@@ -6,33 +6,17 @@
         <i class="mdi mdi-plus"></i> Add New Charger
       </button>
     </div>
-    
-    <StationsFilter 
-      v-model="filters"
-      @apply="fetchStations"
-      @reset="resetFilters"
-    />
-    
-    <StationsList 
-      :stations="stations"
-      :filtered-stations="filteredStations"
-      :is-loading="isLoading"
-      :error="error"
-      :is-admin="true"
-      @view-on-map="viewOnMap"
-      @edit="editStation"
-      @delete="deleteStation"
-    />
-    
+
+    <StationsFilter v-model="filters" @apply="fetchStations" @reset="resetFilters" />
+
+    <StationsList :stations="stations" :filtered-stations="filteredStations" :is-loading="isLoading" :error="error"
+      :is-admin="true" @view-on-map="viewOnMap" @edit="editStation" @delete="deleteStation" />
+
     <transition name="fade">
       <div v-if="showAddForm || editingStation" class="modal-overlay">
         <div class="modal-container">
-          <StationForm 
-            :station="editingStation"
-            :is-submitting="isSubmitting"
-            @submit="saveStation"
-            @close="closeForm"
-          />
+          <StationForm :station="editingStation" :is-submitting="isSubmitting" @submit="saveStation"
+            @close="closeForm" />
         </div>
       </div>
     </transition>
@@ -47,16 +31,18 @@ import StationsList from '../../components/stations/StationsList.vue';
 import StationForm from '../../components/admin/StationForm.vue';
 import { useStations, useStationFilters } from '../../composables/useStations';
 import type { ChargingStation } from '../../types';
+import Swal from 'sweetalert2';
+
 
 const router = useRouter();
-const { 
-  stations, 
-  isLoading, 
-  error, 
-  fetchStations, 
-  addStation, 
-  updateStation, 
-  deleteStation: removeStation
+const {
+  stations,
+  isLoading,
+  error,
+  fetchStations,
+  addStation,
+  updateStation,
+  removeStation
 } = useStations();
 const { filters, applyFilters, resetFilters } = useStationFilters();
 
@@ -69,9 +55,9 @@ const filteredStations = computed(() => {
 });
 
 const viewOnMap = (station: ChargingStation) => {
-  router.push({ 
+  router.push({
     path: '/admin/map',
-    query: { stationId: station.id }
+    query: { stationId: station.name }
   });
 };
 
@@ -80,35 +66,49 @@ const editStation = (station: ChargingStation) => {
 };
 
 const deleteStation = async (station: ChargingStation) => {
-  if (station.id) {
-    await removeStation(station.id);
+  if (station.name) {
+    try {
+      await removeStation(station);
+      await fetchStations(); // make sure new station appears
+    } catch (err) {
+      console.error(err);
+    } finally {
+      await fetchStations();
+    }
   }
 };
 
 const saveStation = async (station: ChargingStation) => {
   isSubmitting.value = true;
-  
   try {
-    if (station.id) {
-      await updateStation(station.id, station);
+    if (editingStation.value) {
+      await updateStation(station);
     } else {
       await addStation(station);
     }
     closeForm();
+    await fetchStations(); // make sure new station appears
   } catch (err) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Charging Station already exists',
+      text: 'Please enter a new charging station name.',
+    });
     console.error(err);
   } finally {
+    await fetchStations();
     isSubmitting.value = false;
   }
 };
+
 
 const closeForm = () => {
   showAddForm.value = false;
   editingStation.value = null;
 };
 
-onMounted(() => {
-  fetchStations();
+onMounted(async () => {
+  await fetchStations();
 });
 </script>
 
@@ -163,7 +163,7 @@ onMounted(() => {
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .page-header button {
     width: 100%;
   }

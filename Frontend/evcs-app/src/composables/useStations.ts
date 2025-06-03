@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 import type { ChargingStation, StationFilters } from '../types';
-import { allChargingStations } from '@/api/stations.js';
+import { addChargingStation, allChargingStations, deleteChargingStation, updateChargingStation } from '@/api/stations.js';
 import { all } from 'axios';
 
 // This would normally fetch from an API
@@ -15,7 +15,6 @@ export function useStations() {
 
     try {
       stations.value = await allChargingStations(); // ← fix here
-      console.log(typeof stations.value); // "object"                           
       console.log('Received in usestations', stations.value)
     } catch (err) {
       error.value = 'Failed to load charging stations';
@@ -28,84 +27,66 @@ export function useStations() {
   const addStation = async (station: ChargingStation) => {
     isLoading.value = true;
     error.value = null;
-
     try {
-      // This would be an API call in a real application
-      // const response = await fetch('/api/stations', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(station)
-      // });
-      // const data = await response.json();
-      // stations.value = [...stations.value, data];
-
-      // For now, we'll just simulate adding
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const newStation = {
-        ...station,
-        id: `station-${Date.now()}`
-      };
-      stations.value = [...stations.value, newStation];
-
+      const response = await addChargingStation(station);
+      console.log(response.message);
     } catch (err) {
-      error.value = 'Failed to add charging station';
+      if (err.response) {
+        error.value = err.response.message;
+        console.error("usestations", err.response.message);
+        throw new Error(err.response.message); // ✅ RE-THROW
+      }
+      error.value = 'Failed to add charging stations';
       console.error(err);
+      throw new Error('Failed to add charging stations'); // ✅ RE-THROW
     } finally {
       isLoading.value = false;
     }
   };
 
-  const updateStation = async (id: string, updates: Partial<ChargingStation>) => {
+
+  const updateStation = async (station: ChargingStation) => {
     isLoading.value = true;
     error.value = null;
-
     try {
-      // This would be an API call in a real application
-      // const response = await fetch(`/api/stations/${id}`, {
-      //   method: 'PUT',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(updates)
-      // });
-      // const data = await response.json();
-
-      // For now, we'll just simulate updating
-      await new Promise(resolve => setTimeout(resolve, 500));
-      stations.value = stations.value.map(station =>
-        station.id === id ? { ...station, ...updates } : station
-      );
-
+      const response = await updateChargingStation(station);
+      console.log(response.message);
     } catch (err) {
-      error.value = 'Failed to update charging station';
+      if (err.response) {
+        error.value = err.response.message;
+        console.error("usestations", err.response.message);
+        throw new Error(err.response.message); // ✅ RE-THROW
+      }
+      error.value = 'Failed to update charging stations';
       console.error(err);
+      throw new Error('Failed to update charging stations'); // ✅ RE-THROW
     } finally {
       isLoading.value = false;
     }
+
   };
 
-  const deleteStation = async (id: string) => {
+  const removeStation = async (station: ChargingStation) => {
     isLoading.value = true;
     error.value = null;
-
     try {
-      // This would be an API call in a real application
-      // await fetch(`/api/stations/${id}`, {
-      //   method: 'DELETE'
-      // });
-
-      // For now, we'll just simulate deletion
-      await new Promise(resolve => setTimeout(resolve, 500));
-      stations.value = stations.value.filter(station => station.id !== id);
-
+      const response = await deleteChargingStation(station);
     } catch (err) {
-      error.value = 'Failed to delete charging station';
+      if (err.response) {
+        error.value = err.response.message;
+        console.error("usestations", err.response.message);
+        throw new Error(err.response.message); // ✅ RE-THROW
+      }
+      error.value = 'Failed to update charging stations';
       console.error(err);
+      throw new Error('Failed to update charging stations'); // ✅ RE-THROW
     } finally {
       isLoading.value = false;
     }
   };
 
   const getStationById = (id: string) => {
-    return stations.value.find(station => station.id === id) || null;
+    return stations.value.find(station => station.name === id) || null;
   };
 
   return {
@@ -115,7 +96,7 @@ export function useStations() {
     fetchStations,
     addStation,
     updateStation,
-    deleteStation,
+    removeStation,
     getStationById
   };
 }

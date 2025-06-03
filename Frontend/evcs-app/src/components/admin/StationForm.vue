@@ -6,52 +6,28 @@
         <i class="mdi mdi-close"></i>
       </button>
     </div>
-    
+
     <form @submit.prevent="submitForm">
       <div class="form-grid">
         <div class="form-group">
           <label class="form-label" for="name">Station Name*</label>
-          <input 
-            id="name"
-            type="text" 
-            v-model="form.name" 
-            class="form-input"
-            required
-          >
+          <input id="name" type="text" v-model="form.name" class="form-input" :disabled="isEditing" required>
         </div>
-        
+
+
         <div class="form-group">
           <label class="form-label" for="status">Status*</label>
-          <select 
-            id="status"
-            v-model="form.status" 
-            class="form-select"
-            required
-          >
+          <select id="status" v-model="form.status" class="form-select" required>
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
             <option value="Maintenance">Maintenance</option>
           </select>
         </div>
-        
-        <div class="form-group">
-          <label class="form-label" for="address">Address</label>
-          <input 
-            id="address"
-            type="text" 
-            v-model="form.address" 
-            class="form-input"
-          >
-        </div>
-        
+
+
         <div class="form-group">
           <label class="form-label" for="connectorType">Connector Type*</label>
-          <select 
-            id="connectorType"
-            v-model="form.connectorType" 
-            class="form-select"
-            required
-          >
+          <select id="connectorType" v-model="form.connectorType" class="form-select" required>
             <option value="Type 1">Type 1</option>
             <option value="Type 2">Type 2</option>
             <option value="CCS">CCS</option>
@@ -59,61 +35,32 @@
             <option value="Tesla">Tesla</option>
           </select>
         </div>
-        
+
         <div class="form-group">
           <label class="form-label" for="powerOutput">Power Output (kW)*</label>
-          <input 
-            id="powerOutput"
-            type="number" 
-            v-model.number="form.powerOutput" 
-            class="form-input"
-            min="0"
-            step="0.1"
-            required
-          >
+          <input id="powerOutput" type="number" v-model.number="form.powerOutput" class="form-input" min="0" step="0.1"
+            required>
         </div>
-        
-        <div class="form-group">
-          <label class="form-label" for="price">Price (per kWh)</label>
-          <input 
-            id="price"
-            type="text" 
-            v-model="form.price" 
-            class="form-input"
-            placeholder="e.g. $0.35/kWh"
-          >
-        </div>
-        
+
+
         <div class="form-group">
           <label class="form-label" for="latitude">Latitude*</label>
-          <input 
-            id="latitude"
-            type="number" 
-            v-model.number="form.location.latitude" 
-            class="form-input"
-            step="0.000001"
-            required
-          >
+          <input id="latitude" type="number" v-model.number="form.location.latitude" class="form-input" step="0.000001"
+            required>
         </div>
-        
+
         <div class="form-group">
           <label class="form-label" for="longitude">Longitude*</label>
-          <input 
-            id="longitude"
-            type="number" 
-            v-model.number="form.location.longitude" 
-            class="form-input"
-            step="0.000001"
-            required
-          >
+          <input id="longitude" type="number" v-model.number="form.location.longitude" class="form-input"
+            step="0.000001" required>
         </div>
       </div>
-      
+
       <div class="form-actions">
         <button type="button" class="btn btn-secondary" @click="$emit('close')">
           Cancel
         </button>
-        
+
         <button type="submit" class="btn btn-primary" :disabled="isSubmitting">
           <span v-if="isSubmitting">
             <i class="mdi mdi-loading mdi-spin"></i> Saving...
@@ -155,8 +102,6 @@ const form = reactive<ChargingStation>({
   status: 'Active',
   powerOutput: 0,
   connectorType: 'Type 2',
-  address: '',
-  price: ''
 });
 
 const initForm = () => {
@@ -167,14 +112,11 @@ const initForm = () => {
     form.status = props.station.status;
     form.powerOutput = props.station.powerOutput;
     form.connectorType = props.station.connectorType;
-    form.address = props.station.address || '';
-    form.price = props.station.price || '';
   }
 };
 
 const submitForm = () => {
   emit('submit', {
-    ...(props.station?.id ? { id: props.station.id } : {}),
     name: form.name,
     location: {
       latitude: form.location.latitude,
@@ -183,9 +125,8 @@ const submitForm = () => {
     status: form.status,
     powerOutput: form.powerOutput,
     connectorType: form.connectorType,
-    address: form.address,
-    price: form.price
   });
+
 };
 
 onMounted(() => {
@@ -240,14 +181,21 @@ onMounted(() => {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .form-actions {
     flex-direction: column-reverse;
     gap: 0.75rem;
   }
-  
+
   .form-actions button {
     width: 100%;
   }
+
+  .form-input:disabled {
+    background-color: #f5f5f5;
+    color: #a1a1a1;
+    cursor: not-allowed;
+  }
+
 }
 </style>

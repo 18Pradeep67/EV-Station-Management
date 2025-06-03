@@ -36,7 +36,7 @@ const filteredStations = computed(() => {
 const viewOnMap = (station: ChargingStation) => {
   router.push({ 
     path: '/map',
-    query: { stationId: station.id }
+    query: { stationId: station.name }
   });
 };
 

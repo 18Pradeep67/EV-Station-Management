@@ -19,10 +19,6 @@
         </span>
       </div>
       
-      <div class="station-address" v-if="selectedStation.address">
-        {{ selectedStation.address }}
-      </div>
-      
       <div class="station-details">
         <div class="detail-item">
           <span class="detail-label">Power Output:</span>
@@ -34,10 +30,7 @@
           <span class="detail-value">{{ selectedStation.connectorType }}</span>
         </div>
         
-        <div class="detail-item" v-if="selectedStation.price">
-          <span class="detail-label">Price:</span>
-          <span class="detail-value">{{ selectedStation.price }}</span>
-        </div>
+
       </div>
       
       <div class="station-actions" v-if="isAdmin">
@@ -142,7 +135,8 @@ const updateMarkers = () => {
   
   // If a specific station should be centered
   if (props.centerStationId) {
-    const station = props.stations.find(s => s.id === props.centerStationId);
+    const station = props.stations.find(s => s.name === props.centerStationId);
+    console.log("props", station);
     if (station) {
       map.value.setView(
         [station.location.latitude, station.location.longitude], 
@@ -193,19 +187,23 @@ watch(() => props.stations, () => {
 }, { deep: true });
 
 // Update markers when center station changes
-watch(() => props.centerStationId, () => {
-  if (props.centerStationId && map.value) {
-    const station = props.stations.find(s => s.id === props.centerStationId);
-    if (station) {
-      map.value.setView(
-        [station.location.latitude, station.location.longitude], 
-        15
-      );
-      
-      selectedStation.value = station;
+watch(
+  () => [props.stations, props.centerStationId],
+  ([stations, centerId]) => {
+    if (stations.length > 0 && centerId && map.value) {
+      const station = stations.find(s => s.name === centerId);
+      if (station) {
+        map.value.setView(
+          [station.location.latitude, station.location.longitude],
+          25
+        );
+        selectedStation.value = station;
+      }
     }
-  }
-});
+  },
+  { immediate: true, deep: true }
+);
+
 </script>
 
 <style>

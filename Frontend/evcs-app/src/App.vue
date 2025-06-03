@@ -8,24 +8,26 @@ import NavBarLoggedIn from '@/components/NavbarLoggedIn.vue'
 import NavBarPublic from '@/components/Navbar.vue'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 
-// Get current route
 const route = useRoute()
+const auth = useAuthStore()
 
-// Routes where NO navbar should show (optional)
 const noNavbarRoutes = []
-
-// Routes where public navbar should show
 const publicRoutes = ['/login', '/signup', '/']
 
-// Determine which navbar to show
 const currentNavbar = computed(() => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
-
   if (noNavbarRoutes.includes(route.path)) return null
 
-  return isAuthenticated && !publicRoutes.includes(route.path)
-    ? NavBarLoggedIn
-    : NavBarPublic
+  // Show logged-in navbar only if:
+  // - user is authenticated AND
+  // - token exists AND
+  // - token is valid (admin or not — we just care it's legit)
+  const tokenValid = auth.token && auth.token.length > 10 // crude check
+  if (auth.isAuthenticated && tokenValid && !publicRoutes.includes(route.path)) {
+    return NavBarLoggedIn
+  }
+
+  return NavBarPublic
 })
 </script>

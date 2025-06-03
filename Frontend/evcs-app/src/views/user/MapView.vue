@@ -6,6 +6,7 @@
       :stations="stations"
       :is-loading="isLoading"
       :center-station-id="centerStationId"
+      :is-admin="false"
     />
   </div>
 </template>

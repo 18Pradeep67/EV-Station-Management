@@ -22,60 +22,81 @@
       
     </div>
     
-    <div class="station-actions">
-      <button class="btn btn-secondary" @click="$emit('view-on-map', station)">
-        <i class="mdi mdi-map-marker"></i> View on Map
-      </button>
-      
-      <template v-if="isAdmin">
-        <button class="btn btn-primary" @click="$emit('edit', station)">
-          <i class="mdi mdi-pencil"></i> Edit
+      <div class="station-actions">
+        <button class="btn btn-secondary" @click="$emit('view-on-map', station)">
+          <i class="mdi mdi-map-marker"></i> View on Map
         </button>
         
-        <button class="btn btn-danger" @click="confirmDelete">
-          <i class="mdi mdi-delete"></i> Delete
-        </button>
-      </template>
+        <template v-if="isAdmin">
+          <button class="btn btn-primary" @click="$emit('edit', station)">
+            <i class="mdi mdi-pencil"></i> Edit
+          </button>
+          
+          <button class="btn btn-danger" @click="confirmDelete">
+            <i class="mdi mdi-delete"></i> Delete
+          </button>
+        </template>
+      </div>
     </div>
-  </div>
-</template>
+  </template>
 
-<script setup lang="ts">
-import { computed, PropType } from 'vue';
-import type { ChargingStation } from '../../types';
+  <script setup lang="ts">
+  import { computed, PropType } from 'vue';
+  import type { ChargingStation } from '../../types';
+  import Swal from 'sweetalert2';
 
-const props = defineProps({
-  station: {
-    type: Object as PropType<ChargingStation>,
-    required: true
-  },
-  isAdmin: {
-    type: Boolean,
-    default: false
-  }
-});
 
-const emit = defineEmits(['view-on-map', 'edit', 'delete']);
+  const props = defineProps({
+    station: {
+      type: Object as PropType<ChargingStation>,
+      required: true
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false
+    }
+  });
 
-const statusClass = computed(() => {
-  switch (props.station.status) {
-    case 'Active':
-      return 'badge-active';
-    case 'Inactive':
-      return 'badge-inactive';
-    case 'Maintenance':
-      return 'badge-maintenance';
-    default:
-      return '';
-  }
-});
+  const emit = defineEmits(['view-on-map', 'edit', 'delete']);
 
-const confirmDelete = () => {
-  if (confirm(`Are you sure you want to delete ${props.station.name}?`)) {
+  const statusClass = computed(() => {
+    switch (props.station.status) {
+      case 'Active':
+        return 'badge-active';
+      case 'Inactive':
+        return 'badge-inactive';
+      case 'Maintenance':
+        return 'badge-maintenance';
+      default:
+        return '';
+    }
+  });
+
+const confirmDelete = async () => {
+  const result = await Swal.fire({
+    title: `Delete ${props.station.name}?`,
+    text: 'This action cannot be undone.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel'
+  });
+
+  if (result.isConfirmed) {
     emit('delete', props.station);
+    Swal.fire({
+      title: 'Deleted!',
+      text: `${props.station.name} has been deleted.`,
+      icon: 'success',
+      timer: 1500,
+      showConfirmButton: false
+    });
   }
 };
-</script>
+
+  </script>
 
 <style scoped>
 .station-card {
