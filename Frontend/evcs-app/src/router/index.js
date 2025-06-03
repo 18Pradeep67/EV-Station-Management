@@ -10,7 +10,7 @@ import AdminMapView from '@/views/admin/AdminMapView.vue';
 import { jwtDecode } from 'jwt-decode';
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
     { path: '/', name: 'home', component: HomeView,meta:{layout:'public'} },
     { path: '/signup', name: 'signup', component: SignupView, meta:{layout:'public'} },
