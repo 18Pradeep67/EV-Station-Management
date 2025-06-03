@@ -5,5 +5,5 @@
 
 <script setup>
   import Hero from '@/components/Hero.vue';
-  import HomeCards from '@/components/Homecards.vue';
+  import HomeCards from '@/components/HomeCards.vue';
 </script>
