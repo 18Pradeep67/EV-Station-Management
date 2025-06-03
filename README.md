@@ -1,7 +1,16 @@
-# A Charging Station Management App
-A full-stack web application to manage EV charging stations. Built with **Node.js**, **Express**, **MongoDB**, and **Vue.js**, and deployed on the cloud.
+# EV Charging Station Management App
+
+A full-stack web application to manage EV charging stations. Built with **Node.js**, **Express**, **MongoDB**, and **Vue.js**, deployed on the cloud using **Render**.
 
 ---
+
+## Live Demo
+
+- **Frontend:** [https://ev-station-management-ueig.onrender.com](https://ev-station-management-ueig.onrender.com)  
+- **Backend API:** [https://ev-station-management-backend.onrender.com](https://ev-station-management-backend.onrender.com)
+
+---
+
 
 ##  Features
 
@@ -67,4 +76,6 @@ A full-stack web application to manage EV charging stations. Built with **Node.j
 | POST   | /api/v1/addChargingStation      | Add new charger   |
 | PUT    | /api/v1/updateChargingStation/\:name | Update charger    |
 | DELETE | /api/v1/deleteChargingStation/\:name | Delete charger    |
+
+
 
