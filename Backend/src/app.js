@@ -28,5 +28,5 @@ app.use('/api/v1',csRoutes);
 app.use('/api/v1',userRoutes);
 
 app.listen(PORT,()=>{
-    console.log(`Server boom boom on ${PORT}`);
+    console.log(`Server is running on ${PORT}`);
 });
