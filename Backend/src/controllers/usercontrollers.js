@@ -16,7 +16,7 @@ export const signup = async (req, res) => {
     console.log("POST /api/v1/signup");
     const { username, email, password, isAdmin } = req.body;
 
-    try {
+    try {   
         const existingUser = await User.findOne({ username });
         if (existingUser)
         return res.status(400).json({ error: "Username already taken" });
@@ -26,7 +26,7 @@ export const signup = async (req, res) => {
         return res.status(400).json({ error: "Email already taken" });
 
         const hashed = await hashPassword(password);
-        const user = new User({ username, email, password: hashed, isAdmin: !!isAdmin });
+        const user = new User({ username, email, password: hashed , isAdmin});
 
         await user.save();
 
@@ -44,16 +44,16 @@ export const login = async (req, res) => {
 
     try {
         const user = await User.findOne({ username });
-        if (!user)
-        return res.status(400).json({ error: "Invalid username or password" });
-
+        if (!user){
+            return res.status(400).json({ message: "Invalid username or password" });
+        }
         const isMatch = await comparePasswords(password, user.password);
         if (!isMatch)
-        return res.status(400).json({ error: "Invalid username or password" });
+        return res.status(400).json({ message: "Invalid username or password" });
 
         const token = generateToken(user);
         res.status(200).json({ token });
     } catch (err) {
-        res.status(500).json({ error: "Server error during login" });
+        res.status(500).json({ message: "Server error during login" });
     }
 };
